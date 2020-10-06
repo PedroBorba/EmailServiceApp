@@ -10,7 +10,6 @@ import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.pedroborba.model.LinkedList
-import com.pedroborba.model.User
 
 
 class EmailService : IntentService("EmailService") {
@@ -21,20 +20,17 @@ class EmailService : IntentService("EmailService") {
 
         var bundle = intent?.getParcelableExtra("myBundle") as Bundle
         var lista = bundle.getParcelable<LinkedList>("lista") as LinkedList
-        var user = bundle.getParcelable<User>("user") as User
 
-        user.novaFuncao()
-        println("@@@@@@@@@@@@ USER: ${user.name} IDADE ${user.idade}")
         lista.printarLista()
         lista.removeDuplicates()
-        publicarResultado(user, lista)
+        publicarResultado(lista)
         stopForeground(true)
         stopSelf()
     }
 
     override fun onCreate() {
         super.onCreate()
-        android.os.Debug.waitForDebugger();
+        //android.os.Debug.waitForDebugger();
         createNotificationChannel()
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.mipmap.sym_def_app_icon)
@@ -44,11 +40,10 @@ class EmailService : IntentService("EmailService") {
         startForeground(1, notification)
     }
 
-    private fun publicarResultado(user: User, lista: LinkedList){
+    private fun publicarResultado(lista: LinkedList){
         var it: Intent = Intent()
         it.action = "com.pedroborba.emailclientapp.ENVIAR_USUARIO"
         var bundle = Bundle()
-        bundle.putSerializable("user", user)
         bundle.putParcelable("lista", lista)
 
         it.putExtra("myBundle", bundle)
